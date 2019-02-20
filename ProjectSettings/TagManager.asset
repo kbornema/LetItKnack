@@ -15,10 +15,10 @@ TagManager:
   - 
   - Pin
   - PinLine
-  - 
+  - PinSlot
   - PinBlocker
-  - PinHitter
-  - 
+  - Hitter
+  - HitterBlocker
   - 
   - 
   - 
