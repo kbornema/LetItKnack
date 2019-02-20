@@ -22,8 +22,15 @@ public class Pin : MonoBehaviour
 
     private float _xCoord;
 
-    public MyEvent<Args> PinStateChangedEvent = new MyEvent<Args>();
-    public MyEvent<Args> PinOnLineChangedEvent = new MyEvent<Args>();
+    public GenericEvent<Args> PinStateChangedEvent = new GenericEvent<Args>();
+    public GenericEvent<Args> PinOnLineChangedEvent = new GenericEvent<Args>();
+
+    [SerializeField]
+    private Sfx _sfx = default;
+    [SerializeField]
+    private float _sfxCooldown = 0.25f;
+
+    private float _lastSfx;
 
     private void Reset()
     {
@@ -92,6 +99,15 @@ public class Pin : MonoBehaviour
         {
             _isOnPinLine = isOnPinLine;
             PinOnLineChangedEvent.Invoke(new Args(this));
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(Time.time - _lastSfx >= _sfxCooldown)
+        {
+            GameManager.Instance.PlaySound(_sfx);
+            _lastSfx = Time.time;
         }
     }
 

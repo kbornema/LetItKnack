@@ -21,6 +21,8 @@ public class GameManager : MonoBehaviour
     private AudioSource _audioPrefab = default;
     private List<Pin> _allPins = new List<Pin>();
 
+    private Queue<AudioSource> _unusedAudio = new Queue<AudioSource>();
+
     private void Awake()
     {
         _instance = this;
@@ -48,14 +50,32 @@ public class GameManager : MonoBehaviour
         _pinLine.UnlockAll();
     }
 
-    public void PlaySound(AudioClip clip)
+    public void PlaySound(Sfx sfx)
     {
-        if (clip != null)
+        if (sfx.HasClip)
         {
-            var newSound = Instantiate(_audioPrefab);
-            newSound.clip = clip;
-            newSound.Play();
+            AudioSource audio = null;
+
+            if(_unusedAudio.Count > 0)
+            {
+                audio = _unusedAudio.Dequeue();
+                audio.gameObject.SetActive(true);
+            }
+
+            else
+            {
+                audio  = Instantiate(_audioPrefab);
+            }
+
+            sfx.Fill(audio);
+            audio.Play();
         }
+    }
+
+    public void SfxFinished(AudioSource audio)
+    {
+        audio.gameObject.SetActive(false);
+        _unusedAudio.Enqueue(audio);
     }
 
     private void ApplyPinSettings()

@@ -130,6 +130,12 @@ MonoBehaviour:
   _rigidbody: {fileID: 4266246591497296866}
   _mass: 0.5
   _material: {fileID: 6200000, guid: 4435da3ff86737f45beaf7b18d576fda, type: 2}
+  _sfx:
+    _clip: {fileID: 8300000, guid: ec2e47b5da2b0b14e897a9bb6e47c874, type: 3}
+    _volumeMin: 1
+    _volumeMax: 1
+    _pitchMin: 0.9
+    _pitchMax: 1.1
 --- !u!212 &4266246591497296797
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -202,8 +208,8 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.3, y: 0.8}
-  m_EdgeRadius: 0.1
+  m_Size: {x: 0.1, y: 0.6}
+  m_EdgeRadius: 0.2
 --- !u!50 &4266246591497296866
 Rigidbody2D:
   serializedVersion: 4

@@ -14,7 +14,8 @@ public class PinLockLine : MonoBehaviour
     private bool _hasLockablePins = false;
     public bool HasLockablePins { get { return _hasLockablePins; } }
 
-    public MyEvent<Args> OnHasLockablePinsChangedEvent = new MyEvent<Args>();
+    public GenericEvent<Args> OnHasLockablePinsChangedEvent = new GenericEvent<Args>();
+    public GenericEvent<Args> OnLockedPinEvent = new GenericEvent<Args>();
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -66,6 +67,9 @@ public class PinLockLine : MonoBehaviour
                 numLocked++;
             }
         }
+
+        if (numLocked > 0)
+            OnLockedPinEvent.Invoke(new Args(this));
 
         //if(numLocked > 0)
         OnCheckLockablePins();

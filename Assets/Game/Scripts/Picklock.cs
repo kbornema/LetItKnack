@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PicklockHead : MonoBehaviour
+public class Picklock : MonoBehaviour
 {
     [SerializeField]
     private Rigidbody2D _rigidbody = default;

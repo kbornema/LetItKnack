@@ -7,7 +7,7 @@ public class MouseController : MonoBehaviour
     [SerializeField]
     private float _forceFactor = 1.0f;
     [SerializeField]
-    private PicklockHead _target = default;
+    private Picklock _target = default;
 
     [SerializeField]
     private float _minDistance = 0.01f;

@@ -22,7 +22,7 @@ public class PinState_Color : MonoBehaviour
 
         if (state == Pin.State.Locked)
         {
-            _spriteRenderer.color = Color.black;
+            _spriteRenderer.color = Color.white;
         }
 
         else if (_pin.IsOnPinLine)
