@@ -2,28 +2,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PinLockLine : MonoBehaviour
 {
     private Dictionary<PinSlot, PinSlot> _collidingPins = new Dictionary<PinSlot, PinSlot>();
     private List<PinSlot> _lockedPins = new List<PinSlot>();
 
-    [SerializeField]
-    private SpriteRenderer _feedbackSprite = default;
+    public int NumLockedPins { get { return _lockedPins.Count; } }
 
-    // Update is called once per frame
-    private void Update()
-    {
-        if(Input.GetMouseButtonDown(0))
-        {
-            TryLockPins();
-        }
+    private bool _hasLockablePins = false;
+    public bool HasLockablePins { get { return _hasLockablePins; } }
 
-        if(Input.GetMouseButtonDown(1))
-        {
-            UnlockAll();
-        }
-    }
+    public MyEvent<Args> OnHasLockablePinsChangedEvent = new MyEvent<Args>();
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -37,9 +28,9 @@ public class PinLockLine : MonoBehaviour
             }
             else
             {
-                pinSlot.OnCanBeLocked();
                 _collidingPins.Add(pinSlot, pinSlot);
-                CheckPins();
+                pinSlot.GetPin().SetSlotIsOnPinLine(true);
+                OnCheckLockablePins();
             }
         }
     }
@@ -52,9 +43,9 @@ public class PinLockLine : MonoBehaviour
         {
             if (_collidingPins.ContainsKey(pinSlot))
             {
-                pinSlot.OnCanNotBeLocked();
+                pinSlot.GetPin().SetSlotIsOnPinLine(false);
                 _collidingPins.Remove(pinSlot);
-                CheckPins();
+                OnCheckLockablePins();
             }
             else
             {
@@ -63,45 +54,64 @@ public class PinLockLine : MonoBehaviour
         }
     }
 
-    private void TryLockPins()
+    public void TryLockPins()
     {
+        int numLocked = 0;
+
         foreach (var p in _collidingPins.Keys)
         {
             if (p.GetPin().TryLock())
             {
                 _lockedPins.Add(p);
-                CheckPins();
+                numLocked++;
             }
         }
+
+        //if(numLocked > 0)
+        OnCheckLockablePins();
     }
 
-    private void UnlockAll()
+    public void UnlockAll()
     {
         foreach (var p in _lockedPins)
             p.GetPin().TryUnlock();
 
         _lockedPins.Clear();
-        CheckPins();
+
+        OnCheckLockablePins();
     }
 
-    private void CheckPins()
+    private void OnCheckLockablePins()
     {
-        foreach(var pinSlot in _collidingPins.Keys)
+        var tmpHasLockablePins = CheckHasLockablePins();
+
+        if(tmpHasLockablePins != _hasLockablePins)
+        {
+            _hasLockablePins = tmpHasLockablePins;
+            OnHasLockablePinsChangedEvent.Invoke(new Args(this));
+        }
+    }
+
+    private bool CheckHasLockablePins()
+    {
+        foreach (var pinSlot in _collidingPins.Keys)
         {
             var pin = pinSlot.GetPin();
-            
+
             if(pin.GetState() == Pin.State.Free)
-            {
-                Feedback(Color.green);
-                return;
-            }
+                return true;
         }
 
-        Feedback(Color.yellow);
+        return false;
     }
 
-    private void Feedback(Color color)
+    public struct Args
     {
-        _feedbackSprite.color = color;
+        public PinLockLine LockLine;
+
+        public Args(PinLockLine line)
+        {
+            LockLine = line;
+        }
     }
 }

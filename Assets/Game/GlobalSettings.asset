@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: GlobalSettings
   m_EditorClassIdentifier: 
   _pinGravityScale: 1.5
-  _pinMassScale: 0.5
+  _pinMassScale: 1

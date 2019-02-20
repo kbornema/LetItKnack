@@ -10,7 +10,7 @@ PrefabInstance:
     - target: {fileID: 4266246591497296870, guid: 3c04c9137ef0ca94eb248a4dae4af049,
         type: 3}
       propertyPath: m_Name
-      value: HeavyPin
+      value: Pin_Heavy
       objectReference: {fileID: 0}
     - target: {fileID: 4266246591497296867, guid: 3c04c9137ef0ca94eb248a4dae4af049,
         type: 3}
@@ -67,6 +67,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4266246591497296864, guid: 3c04c9137ef0ca94eb248a4dae4af049,
+        type: 3}
+      propertyPath: _rigidbody
+      value: 
+      objectReference: {fileID: 7332135988074864906}
+    - target: {fileID: 4266246591497296864, guid: 3c04c9137ef0ca94eb248a4dae4af049,
+        type: 3}
+      propertyPath: _mass
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4266246591497296866, guid: 3c04c9137ef0ca94eb248a4dae4af049,
+        type: 3}
+      propertyPath: m_GravityScale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4266246591497296797, guid: 3c04c9137ef0ca94eb248a4dae4af049,
         type: 3}
       propertyPath: m_Color.r
@@ -81,16 +96,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Color.b
       value: 0.6320754
-      objectReference: {fileID: 0}
-    - target: {fileID: 4266246591497296864, guid: 3c04c9137ef0ca94eb248a4dae4af049,
-        type: 3}
-      propertyPath: _rigidbody
-      value: 
-      objectReference: {fileID: 7332135988074864906}
-    - target: {fileID: 4266246591497296864, guid: 3c04c9137ef0ca94eb248a4dae4af049,
-        type: 3}
-      propertyPath: _mass
-      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4266246591845091626, guid: 3c04c9137ef0ca94eb248a4dae4af049,
         type: 3}
