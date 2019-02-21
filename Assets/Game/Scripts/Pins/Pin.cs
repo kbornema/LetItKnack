@@ -17,8 +17,10 @@ public class Pin : MonoBehaviour
     private State _state = State.Free;
     public State GetState() { return _state; }
 
-    private bool _isOnPinLine = false;
-    public bool IsOnPinLine { get { return _isOnPinLine; } }
+    public bool IsOnPinLine { get { return _slotOnPinLine != null; } }
+
+    private PinSlot _slotOnPinLine;
+    public PinSlot SlotOnPinLine { get { return _slotOnPinLine; } }
 
     private float _xCoord;
 
@@ -93,11 +95,11 @@ public class Pin : MonoBehaviour
         return false;
     }
 
-    public void SetSlotIsOnPinLine(bool isOnPinLine)
+    public void SetSlotIsOnPinLine(PinSlot pinSlot)
     {
-        if(_isOnPinLine != isOnPinLine)
+        if(_slotOnPinLine != pinSlot)
         {
-            _isOnPinLine = isOnPinLine;
+            _slotOnPinLine = pinSlot;
             PinOnLineChangedEvent.Invoke(new Args(this));
         }
     }

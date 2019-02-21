@@ -17,6 +17,9 @@ public class PinLockLine : MonoBehaviour
     public GenericEvent<Args> OnHasLockablePinsChangedEvent = new GenericEvent<Args>();
     public GenericEvent<Args> OnLockedPinEvent = new GenericEvent<Args>();
 
+    private List<PinSlot> _lockablePins = new List<PinSlot>();
+    public List<PinSlot> LockablePins { get { return _lockablePins; } }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         var pinSlot = collision.GetComponent<PinSlot>();
@@ -29,8 +32,9 @@ public class PinLockLine : MonoBehaviour
             }
             else
             {
+                pinSlot.CanBeLocked();
                 _collidingPins.Add(pinSlot, pinSlot);
-                pinSlot.GetPin().SetSlotIsOnPinLine(true);
+                pinSlot.GetPin().SetSlotIsOnPinLine(pinSlot);
                 OnCheckLockablePins();
             }
         }
@@ -44,7 +48,8 @@ public class PinLockLine : MonoBehaviour
         {
             if (_collidingPins.ContainsKey(pinSlot))
             {
-                pinSlot.GetPin().SetSlotIsOnPinLine(false);
+                pinSlot.CanNotBeLocked();
+                pinSlot.GetPin().SetSlotIsOnPinLine(null);
                 _collidingPins.Remove(pinSlot);
                 OnCheckLockablePins();
             }
@@ -61,17 +66,19 @@ public class PinLockLine : MonoBehaviour
 
         foreach (var p in _collidingPins.Keys)
         {
-            if (p.GetPin().TryLock())
+            if(p.OnUse(this))
             {
-                _lockedPins.Add(p);
-                numLocked++;
+                if (p.GetMode() == PinSlot.Mode.Lock)
+                {
+                    _lockedPins.Add(p);
+                    numLocked++;
+                }
             }
         }
 
         if (numLocked > 0)
             OnLockedPinEvent.Invoke(new Args(this));
 
-        //if(numLocked > 0)
         OnCheckLockablePins();
     }
 
@@ -98,12 +105,17 @@ public class PinLockLine : MonoBehaviour
 
     private bool CheckHasLockablePins()
     {
+        _lockablePins.Clear();
+
         foreach (var pinSlot in _collidingPins.Keys)
         {
             var pin = pinSlot.GetPin();
 
             if(pin.GetState() == Pin.State.Free)
+            {
+                _lockablePins.Add(pinSlot);
                 return true;
+            }
         }
 
         return false;
@@ -118,4 +130,5 @@ public class PinLockLine : MonoBehaviour
             LockLine = line;
         }
     }
+
 }

@@ -136,6 +136,7 @@ MonoBehaviour:
     _volumeMax: 1
     _pitchMin: 0.9
     _pitchMax: 1.1
+  _sfxCooldown: 0.15
 --- !u!212 &4266246591497296797
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -279,6 +280,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pin: {fileID: 4266246591497296864}
+  _mode: 0
 --- !u!114 &7500990962766536633
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -292,7 +294,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _spriteRenderer: {fileID: 4266246591845091627}
-  _pin: {fileID: 4266246591497296864}
+  _slot: {fileID: 4266246591845091626}
 --- !u!212 &4266246591845091627
 SpriteRenderer:
   m_ObjectHideFlags: 0

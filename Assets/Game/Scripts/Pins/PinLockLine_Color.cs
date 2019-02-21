@@ -17,9 +17,17 @@ public class PinLockLine_Color : MonoBehaviour
 
     private void OnStateChanged(PinLockLine.Args arg0)
     {
-        if(_lockLine.HasLockablePins)
+        var lockablePins = arg0.LockLine.LockablePins;
+
+        var failSlot = lockablePins.Find(x => x.GetMode() == PinSlot.Mode.Fail);
+        
+        if (_lockLine.HasLockablePins)
         {
-            _spriteRenderer.color = Color.green;
+            if(failSlot != null)
+                _spriteRenderer.color = Color.red;
+
+            else
+                _spriteRenderer.color = Color.green;
         }
 
         else
