@@ -5,10 +5,10 @@ using UnityEngine;
 public class PooledAudio : MonoBehaviour
 {
     [SerializeField]
-    private AudioSource _audioSource;
+    private AudioSource _audioSource = default;
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if(!_audioSource.isPlaying)
         {

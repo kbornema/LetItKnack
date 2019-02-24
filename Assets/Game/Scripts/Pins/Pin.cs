@@ -9,10 +9,6 @@ public class Pin : MonoBehaviour
 
     [SerializeField]
     private Rigidbody2D _rigidbody = default;
-    [SerializeField]
-    private float _mass = 1.0f;
-    [SerializeField]
-    private PhysicsMaterial2D _material = default;
     
     private State _state = State.Free;
     public State GetState() { return _state; }
@@ -22,17 +18,23 @@ public class Pin : MonoBehaviour
     private PinSlot _slotOnPinLine;
     public PinSlot SlotOnPinLine { get { return _slotOnPinLine; } }
 
-    private float _xCoord;
-
     public GenericEvent<Args> PinStateChangedEvent = new GenericEvent<Args>();
     public GenericEvent<Args> PinOnLineChangedEvent = new GenericEvent<Args>();
+
+    [SerializeField]
+    private SpringJoint2D _springJoint = default;
+
+    [SerializeField]
+    private List<Collider2D> _collider = default;
 
     [SerializeField]
     private Sfx _sfx = default;
     [SerializeField]
     private float _sfxCooldown = 0.25f;
-
     private float _lastSfx;
+
+    private float _xCoord;
+    private float _mass = 1.0f;
 
     private void Reset()
     {
@@ -43,7 +45,6 @@ public class Pin : MonoBehaviour
     private void Awake()
     {
         _xCoord = transform.position.x;
-        _rigidbody.sharedMaterial = _material;
     }
 
     private void Start()
@@ -60,6 +61,15 @@ public class Pin : MonoBehaviour
             pos.x = _xCoord;
             transform.position = pos;
         }
+    }
+
+    public void InitPin(float mass, float height)
+    {
+        _mass = mass;
+
+        Vector2 anchorPos = transform.position;
+        anchorPos.y += height;
+        _springJoint.connectedAnchor = anchorPos;
     }
 
     public void ApplySettings(GameplaySettings gameplaySettings)

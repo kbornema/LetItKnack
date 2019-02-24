@@ -14,6 +14,14 @@ public class PinSlot_Color : MonoBehaviour
     {
         _slot.OnSlotCanBeLocked.AddListener(OnCanBeLocked);
         _slot.OnSlotCanBeNotLocked.AddListener(OnCanNotBeLocked);
+
+        _slot.GetPin().PinStateChangedEvent.AddListener(OnPinStateChanged);
+        
+    }
+
+    private void OnPinStateChanged(Pin.Args arg0)
+    {   
+        _spriteRenderer.enabled = (arg0.ThePin.GetState() != Pin.State.Locked);
     }
 
     private void OnCanBeLocked(PinSlot arg0)

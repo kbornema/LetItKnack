@@ -121,6 +121,13 @@ public class PinLockLine : MonoBehaviour
         return false;
     }
 
+    public void Clear()
+    {
+        _collidingPins.Clear();
+        _lockablePins.Clear();
+        _lockedPins.Clear();
+    }
+
     public struct Args
     {
         public PinLockLine LockLine;

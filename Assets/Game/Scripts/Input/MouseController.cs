@@ -28,7 +28,7 @@ public class MouseController : MonoBehaviour
             GameManager.Instance.TryLockPins();
         }
 
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButtonDown(1) && !GameManager.Instance.IsInWinRoutine)
         {
             GameManager.Instance.UnlockAllPins();
         }
