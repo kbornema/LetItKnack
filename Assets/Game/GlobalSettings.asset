@@ -14,3 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _pinGravityScale: 1.5
   _pinMassScale: 1
+  _pinConfigs:
+  - {fileID: 11400000, guid: 0ea83e7bbb59eb741a1a1db473d5a9ea, type: 2}
+  - {fileID: 11400000, guid: 3e6779d88a795784db3fc577c4d84612, type: 2}
+  - {fileID: 11400000, guid: c2ab6c8a5a9610245a8391b61072b361, type: 2}

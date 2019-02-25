@@ -52,6 +52,11 @@ public class PinLockLine : MonoBehaviour
                 pinSlot.GetPin().SetSlotIsOnPinLine(null);
                 _collidingPins.Remove(pinSlot);
                 OnCheckLockablePins();
+
+                if(pinSlot.GetPin().GetState() == Pin.State.Locked)
+                {
+                    pinSlot.GetPin().TryUnlock();
+                }
             }
             else
             {

@@ -16,13 +16,10 @@ public class GameManager : MonoBehaviour
 
     [SerializeField]
     private GameplaySettings _gameplaySettings = default;
-
     [SerializeField]
-    private PinConfiguration _configuration = default;
-
+    private GlobalPinConfiguration _configuration = default;
     [SerializeField]
     private AudioSource _audioPrefab = default;
-
     [SerializeField]
     private List<Pin> _allPins = new List<Pin>();
 
@@ -56,6 +53,11 @@ public class GameManager : MonoBehaviour
         _configuration.Spawn(_numStartPins);
 
         _numCurPins = _numStartPins;
+    }
+    
+    public GameplaySettings GetSettings()
+    {
+        return _gameplaySettings;
     }
 
     private void OnLockedPin(PinLockLine.Args arg0)
@@ -121,7 +123,7 @@ public class GameManager : MonoBehaviour
         _pinLine.UnlockAll();
     }
 
-    public void PlaySound(Sfx sfx)
+    public void PlaySound(Sfx sfx, float pitchScale = 1.0f)
     {
         if (sfx.HasClip)
         {
@@ -138,7 +140,8 @@ public class GameManager : MonoBehaviour
                 audio  = Instantiate(_audioPrefab);
             }
 
-            sfx.Fill(audio);
+            sfx.Fill(audio);    
+            audio.pitch = Mathf.Clamp(audio.pitch * pitchScale, -3.0f, 3.0f);
             audio.Play();
         }
     }
