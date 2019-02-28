@@ -29,7 +29,9 @@ public class Pin : MonoBehaviour
     private List<Collider2D> _collider = default;
 
     [SerializeField]
-    private GameObject _upperColliderObj = default;
+    private List<GameObject> _upperColliderObj = default;
+    [SerializeField]
+    private Transform _slotPos = default;
 
     [SerializeField]
     private Sfx _sfx = default;
@@ -37,6 +39,8 @@ public class Pin : MonoBehaviour
     private float _sfxCooldown = 0.25f;
     [SerializeField]
     private AutoMoveDown _moveDown = default;
+    [SerializeField]
+    private Transform _upperPos = default;
     private float _lastSfx;
 
     private float _xCoord;
@@ -46,6 +50,16 @@ public class Pin : MonoBehaviour
 
     private GameplaySettings _settings;
 
+    private float _lockedTime;
+    public float LockedTime { get { return _lockedTime; } }
+
+    [SerializeField]
+    private ParticleSystem _lockedParticles = default;
+    [SerializeField]
+    private ParticleSystem _slippedParticles = default;
+
+    public int PinIndex = -1;
+
     private void Reset()
     {
         if (!_rigidbody)
@@ -54,7 +68,7 @@ public class Pin : MonoBehaviour
 
     private void Awake()
     {
-        _xCoord = transform.position.x;
+        _xCoord = transform.localPosition.x;
     }
 
     private void Start()
@@ -64,20 +78,25 @@ public class Pin : MonoBehaviour
 
     private void LateUpdate()
     {
-        var pos = transform.position;
+        var pos = transform.localPosition;
 
         if(pos.x != _xCoord)
         {
             pos.x = _xCoord;
-            transform.position = pos;
+            transform.localPosition = pos;
         }
     }
 
-    public void InitPin(PinConfig config, float height)
+    public void InitPin(int pinIndex, PinConfig config, float height)
     {
+        PinIndex = pinIndex;
         _moveDown.SetSpeed(config.SlipSpeed);
 
-        _upperColliderObj.SetActive(config.HasResetHead);
+        for (int i = 0; i < _upperColliderObj.Count; i++)
+        {
+            _upperColliderObj[i].SetActive(config.HasResetHead);
+        }
+
 
         _pitchScale = config.PitchScale;
 
@@ -106,10 +125,17 @@ public class Pin : MonoBehaviour
         _rigidbody.gravityScale = _settings.PinGravityScale;
     }
 
-    public bool TryLock()
+    public bool TryLock(PinLockLine line)
     {   
         if (_state == State.Free)
         {
+            _lockedParticles.Play();
+
+            Vector2 offset = transform.position - _slotPos.position;
+
+            _rigidbody.position = new Vector2(_rigidbody.position.x, line.transform.position.y + offset.y);
+
+            _lockedTime = Time.time;
             _springJoint.enabled = false;
             //_rigidbody.simulated = false;
             _rigidbody.gravityScale = 0.0f;
@@ -122,14 +148,17 @@ public class Pin : MonoBehaviour
         return false;
     }
 
+    public Transform GetUpperTransform()
+    {
+        return _upperPos;
+    }
+
     public bool TryUnlock()
     {
         if (_state == State.Locked)
         {
             _springJoint.enabled = true;
-            //will re-enable gravity:
             ApplySettings();
-            // _rigidbody.simulated = true;
             _rigidbody.velocity = Vector2.zero;
             _state = State.Free;
             PinStateChangedEvent.Invoke(new Args(this));
@@ -150,7 +179,7 @@ public class Pin : MonoBehaviour
 
     public void Move(Vector2 dir)
     {
-        _rigidbody.position += dir * Time.fixedDeltaTime;
+        _rigidbody.position += dir;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -160,6 +189,11 @@ public class Pin : MonoBehaviour
             GameManager.Instance.PlaySound(_sfx, _pitchScale);
             _lastSfx = Time.time;
         }
+    }
+
+    public void PlayMoveParticles()
+    {
+        _slippedParticles.Play();
     }
 
     public struct Args

@@ -10,6 +10,8 @@ public class PinSlot_Color : MonoBehaviour
     [SerializeField]
     private PinSlot _slot = default;
 
+    private float _curAlpha = 1.0f;
+
     private void Start()
     {
         _slot.OnSlotCanBeLocked.AddListener(OnCanBeLocked);
@@ -20,20 +22,29 @@ public class PinSlot_Color : MonoBehaviour
     }
 
     private void OnPinStateChanged(Pin.Args arg0)
-    {   
-        _spriteRenderer.enabled = (arg0.ThePin.GetState() != Pin.State.Locked);
+    {       
+        if(arg0.ThePin.GetState() == Pin.State.Locked)
+        {
+            _curAlpha = 0.5f;
+            SetColor();
+        }
+        else
+        {
+            _curAlpha = 1.0f;
+            SetColor();
+        }
     }
 
     private void OnCanBeLocked(PinSlot arg0)
     {
         if(arg0.GetMode() == PinSlot.Mode.Lock)
         {
-            _spriteRenderer.color = Color.green;
+            SetColor(Color.green);
         }
 
         else
         {
-            _spriteRenderer.color = Color.red;
+            SetColor(Color.red);
         }
     }
 
@@ -41,12 +52,23 @@ public class PinSlot_Color : MonoBehaviour
     {
         if (arg0.GetMode() == PinSlot.Mode.Lock)
         {
-            _spriteRenderer.color = Color.yellow;
+            SetColor(Color.yellow);
         }
 
         else
         {
-            _spriteRenderer.color = Color.red;
+            SetColor(Color.red);
         }
+    }
+
+    private void SetColor(Color col)
+    {
+        col.a = _curAlpha;
+        _spriteRenderer.color = col;
+    }
+
+    private void SetColor()
+    {
+        SetColor(_spriteRenderer.color);
     }
 }

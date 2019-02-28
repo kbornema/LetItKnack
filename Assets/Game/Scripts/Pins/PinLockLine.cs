@@ -7,6 +7,8 @@ using UnityEngine.Events;
 public class PinLockLine : MonoBehaviour
 {
     private Dictionary<PinSlot, PinSlot> _collidingPins = new Dictionary<PinSlot, PinSlot>();
+
+    [SerializeField]
     private List<PinSlot> _lockedPins = new List<PinSlot>();
 
     public int NumLockedPins { get { return _lockedPins.Count; } }
@@ -17,6 +19,7 @@ public class PinLockLine : MonoBehaviour
     public GenericEvent<Args> OnHasLockablePinsChangedEvent = new GenericEvent<Args>();
     public GenericEvent<Args> OnLockedPinEvent = new GenericEvent<Args>();
 
+    [SerializeField]
     private List<PinSlot> _lockablePins = new List<PinSlot>();
     public List<PinSlot> LockablePins { get { return _lockablePins; } }
 
@@ -26,11 +29,7 @@ public class PinLockLine : MonoBehaviour
 
         if(pinSlot)
         {
-            if(_collidingPins.ContainsKey(pinSlot))
-            {
-                Debug.LogWarning("Already in?");
-            }
-            else
+            if(!_collidingPins.ContainsKey(pinSlot))
             {
                 pinSlot.CanBeLocked();
                 _collidingPins.Add(pinSlot, pinSlot);
@@ -40,6 +39,7 @@ public class PinLockLine : MonoBehaviour
         }
     }
 
+    //TODO: bug: sometimes when exiting at the same frame the lock has been locked, it will unlock automatically
     private void OnTriggerExit2D(Collider2D collision)
     {
         var pinSlot = collision.GetComponent<PinSlot>();
@@ -48,24 +48,27 @@ public class PinLockLine : MonoBehaviour
         {
             if (_collidingPins.ContainsKey(pinSlot))
             {
+                float timeDiff = Mathf.Abs(pinSlot.GetPin().LockedTime - Time.time);
+
+                if(timeDiff < Time.fixedDeltaTime)
+                    return;
+
                 pinSlot.CanNotBeLocked();
                 pinSlot.GetPin().SetSlotIsOnPinLine(null);
                 _collidingPins.Remove(pinSlot);
-                OnCheckLockablePins();
 
                 if(pinSlot.GetPin().GetState() == Pin.State.Locked)
                 {
+                    _lockedPins.Remove(pinSlot);
                     pinSlot.GetPin().TryUnlock();
                 }
-            }
-            else
-            {
-                Debug.LogWarning("Not in?");
+
+                OnCheckLockablePins();
             }
         }
     }
 
-    public void TryLockPins()
+    public bool TryLockPins()
     {
         int numLocked = 0;
 
@@ -85,6 +88,7 @@ public class PinLockLine : MonoBehaviour
             OnLockedPinEvent.Invoke(new Args(this));
 
         OnCheckLockablePins();
+        return numLocked > 0;
     }
 
     public void UnlockAll()

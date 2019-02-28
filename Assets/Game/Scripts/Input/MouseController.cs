@@ -21,25 +21,38 @@ public class MouseController : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+        var gameManager = GameManager.Instance;
+
         _mousePos = _cam.ScreenToWorldPoint(Input.mousePosition);
 
+        if (gameManager.IsInWinRoutine)
+            return;
+        
         if (Input.GetMouseButtonDown(0))
+            gameManager.TryLockPins();
+
+        if (GameManager.InDebugMode)
         {
-            GameManager.Instance.TryLockPins();
+            if (Input.GetMouseButtonDown(1))
+                gameManager.UnlockAllPins();
+
+            else if (Input.GetKeyDown(KeyCode.LeftArrow))
+                gameManager.StepLevel(-1);
+
+            else if (Input.GetKeyDown(KeyCode.RightArrow))
+                gameManager.StepLevel(1);
         }
 
-        if (Input.GetMouseButtonDown(1) && !GameManager.Instance.IsInWinRoutine)
-        {
-            GameManager.Instance.UnlockAllPins();
-        }
     }
 
     private void FixedUpdate()
     {
+
         Vector2 mouseDir = _mousePos - _target.GetPosition();
         float distance = Mathf.Clamp(mouseDir.magnitude, _minDistance, _maxDistance);
         Vector2 dir = mouseDir.normalized;
         float force = distance * distance * _forceFactor;
         _target.AddForce(dir, force);
+
     }
 }

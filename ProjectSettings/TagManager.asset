@@ -41,8 +41,14 @@ TagManager:
   - name: Background
     uniqueID: 1120086113
     locked: 0
+  - name: Spring
+    uniqueID: 2639699489
+    locked: 0
   - name: Pin
     uniqueID: 2656278269
+    locked: 0
+  - name: Foreground
+    uniqueID: 2525781753
     locked: 0
   - name: Default
     uniqueID: 0

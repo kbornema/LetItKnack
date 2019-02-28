@@ -22,7 +22,7 @@ public class PinSlot : MonoBehaviour
     {
         if(_mode == Mode.Lock)
         {
-            return _pin.TryLock();
+            return _pin.TryLock(line);
         }
 
         else

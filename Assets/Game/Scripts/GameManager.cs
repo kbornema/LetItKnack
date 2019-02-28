@@ -5,10 +5,13 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public static bool InDebugMode = false;
+
     private static GameManager _instance;
     public static GameManager Instance => _instance;
 
-    public bool UpdateSettings = true;
+    [SerializeField]
+    private int _targetFps = 60;
 
     [SerializeField]
     private PinLockLine _pinLine = default;
@@ -25,34 +28,63 @@ public class GameManager : MonoBehaviour
 
     private Queue<AudioSource> _unusedAudio = new Queue<AudioSource>();
 
-
-
-    [Header("Win")]
-    [SerializeField]
-    private int _numStartPins = 1;
-    [SerializeField]
-    private int _numEndPins = 7;
     [SerializeField]
     private float _winDelay = 0.5f;
     [SerializeField]
+    private float _feedbackWinDelay = 0.25f;
+    [SerializeField]
     private Sfx _wonSfx = default;
-
-    private int _numCurPins;
 
     [HideInInspector]
     public bool IsInWinRoutine;
 
+    private int _curLevel = 0;
+
+    public int CurrentLevel { get { return _curLevel; } }
+    public int MaxLevels { get { return _configuration.NumLevels; } }
+
+    public GenericEvent<GameManager> OnLevelCompletedEvent = new GenericEvent<GameManager>();
+    public GenericEvent<GameManager> OnGameFinishedEvent = new GenericEvent<GameManager>();
+
+    [SerializeField]
+    private ParticleSystem _levelWonParticles = default;
+
+    public bool GameIsOver = false;
+
+    public bool ShouldCountTime = true;
+
+    [SerializeField]
+    private float _totalTimeNeeded = 0.0f;
+    public float TotalTimeNeeded { get { return _totalTimeNeeded; } }
+
+    [SerializeField]
+    private List<VisualSpring> _springs = default;
+    [SerializeField]
+    private ParticleSystem _lockParticles = default;
+
+    [SerializeField]
+    private float _wrongClickPenality = 0.25f;
+
+    [SerializeField]
+    private Sfx _wrongClickSfx = default;
+
     private void Awake()
     {
+        Application.targetFrameRate = _targetFps;
+
         _instance = this;
+
+        if (Application.isEditor)
+            InDebugMode = true;
+
+        for (int i = 0; i < _springs.Count; i++)
+            _springs[i].gameObject.SetActive(false);
     }
 
     private void Start()
     {
         _pinLine.OnLockedPinEvent.AddListener(OnLockedPin);
-        _configuration.Spawn(_numStartPins);
-
-        _numCurPins = _numStartPins;
+        _configuration.Spawn(_curLevel);
     }
     
     public GameplaySettings GetSettings()
@@ -64,9 +96,10 @@ public class GameManager : MonoBehaviour
     {
         if(_pinLine.NumLockedPins == _allPins.Count && !IsInWinRoutine)
         {
-            if (_numCurPins >= _numEndPins)
+            if (!_configuration.HasLevel(_curLevel + 1))
             {
-                Debug.Log("GAME IS OVER");
+                GameIsOver = true;
+                OnGameFinishedEvent.Invoke(this);
             }
 
             else
@@ -76,50 +109,96 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator WonRoutine()
     {
-        IsInWinRoutine = true;
+        IsInWinRoutine = true;  
 
-        yield return new WaitForSeconds(_winDelay);
+        yield return new WaitForSeconds(_feedbackWinDelay);
 
         PlaySound(_wonSfx);
+        _levelWonParticles.Play();
 
         yield return new WaitForSeconds(_winDelay);
 
-        _numCurPins++;
-
-        for (int i = _allPins.Count - 1; i >= 0; i--)
-            Destroy(_allPins[i].gameObject);
-
-
-
-        _pinLine.Clear();
-        _allPins.Clear();
-
-        _configuration.Spawn(_numCurPins);
+        StepLevel(1);
 
         yield return null;
 
         IsInWinRoutine = false;
     }
 
+    public void StepLevel(int delta)
+    {
+        GameIsOver = false;
+        _curLevel = Mathf.Clamp(_curLevel + delta, 0, MaxLevels - 1);
+        PrepareLevel();
+    }
+
+    private void PrepareLevel()
+    {
+        for (int i = 0; i < _springs.Count; i++)
+            _springs[i].gameObject.SetActive(false);
+
+        OnLevelCompletedEvent.Invoke(this);
+
+        for (int i = _allPins.Count - 1; i >= 0; i--)
+            Destroy(_allPins[i].gameObject);
+
+        _pinLine.Clear();
+        _allPins.Clear();
+
+        _configuration.Spawn(_curLevel);
+
+        if (!ShouldCountTime)
+            ShouldCountTime = true;
+    }
+
     private void Update()
     {
-        if(UpdateSettings)
-            ApplyPinSettings();
+        if(ShouldCountTime)
+            _totalTimeNeeded += Time.deltaTime;
     }
 
     public void RegisterPin(Pin pin)
     {
+        var pinUp = pin.GetUpperTransform();
+
+        var springIndex = _allPins.Count;
+        var spring = _springs[pin.PinIndex];
+        spring.gameObject.SetActive(true);
+        spring.ObjToWatch = pinUp;
+
         _allPins.Add(pin);
         pin.ApplySettings(_gameplaySettings);
     }
 
     public void TryLockPins()
     {
-        _pinLine.TryLockPins();
+        if(!_pinLine.TryLockPins())
+        {
+            int numPins = 0;
+            foreach(var pin in _allPins)
+            {
+                if(pin.GetState() == Pin.State.Locked)
+                {
+                    pin.Move(new Vector2(0.0f, -_wrongClickPenality));
+                    pin.PlayMoveParticles();
+
+                    numPins++;
+                }
+            }
+
+            if(numPins > 0)
+                PlaySound(_wrongClickSfx);
+        }
+
+        else
+        {
+            _lockParticles.Play();
+        }
     }
 
     public void UnlockAllPins()
     {
+        GameIsOver = false;
         _pinLine.UnlockAll();
     }
 
@@ -156,5 +235,10 @@ public class GameManager : MonoBehaviour
     {
         foreach (var pin in _allPins)
             pin.ApplySettings(_gameplaySettings);
+    }
+
+    public string GetHelpText()
+    {
+        return _configuration.GetHelpText(_curLevel);
     }
 }

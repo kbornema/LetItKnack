@@ -12,24 +12,52 @@ public class GlobalPinConfiguration : MonoBehaviour
     [SerializeField]
     private Transform _pinRoot = default;
     [SerializeField]
-    private List<Configuration> _configuration = default;
+    private List<Transform> _pinPositions = default;
 
-    public void Spawn(int num)
-    {       
-        var configuration = _configuration[num - 1];
+    [SerializeField]
+    private List<LevelDescription> _levels = default;
+    public int NumLevels { get { return _levels.Count; } }
 
-        var settings = GameManager.Instance.GetSettings();
+    public string GetHelpText(int curLevel)
+    {
+        var text = _levels[curLevel].TextToDisplay;
 
-        for (int i = 0; i < num; i++)
+        if (text)
+            return text.text;
+
+        return "";
+    }
+
+    public bool HasLevel(int level)
+    {
+        if (level >= _levels.Count)
+            return false;
+
+        return true;
+    }
+
+    public void Spawn(int levelIndex)
+    {
+        var levelDesc = _levels[levelIndex];
+        var pinDesc = levelDesc.Pins;
+
+        int numSpawned = 0;
+
+        for (int i = 0; i < pinDesc.Count; i++)
         {
-            var instance = Instantiate(_pinPrefab, configuration.Positions[i].position, Quaternion.identity, _pinRoot);
-            instance.InitPin(settings.GetRandConfig(), _height);
+            if(pinDesc[i])
+            {
+                var instance = Instantiate(_pinPrefab, _pinPositions[i].position, Quaternion.identity, _pinRoot);
+                instance.InitPin(i, pinDesc[i], _height);
+                numSpawned++;
+            }
+        }
+
+        if(numSpawned == 0)
+        {
+            Debug.LogError("Needs pins!");
         }
     }
 
-    [System.Serializable]
-    private class Configuration
-    {
-        public List<Transform> Positions = new List<Transform>();
-    }
+
 }
