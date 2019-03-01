@@ -49,7 +49,7 @@ public class PinLockLine : MonoBehaviour
             if (_collidingPins.ContainsKey(pinSlot))
             {
                 float timeDiff = Mathf.Abs(pinSlot.GetPin().LockedTime - Time.time);
-
+                
                 if(timeDiff < Time.fixedDeltaTime)
                     return;
 
@@ -67,6 +67,14 @@ public class PinLockLine : MonoBehaviour
             }
         }
     }
+
+    //private void LateUpdate()
+    //{
+    //    //for (int i = _lockablePins.Count - 1; i >= 0; i--)
+    //    //{
+            
+    //    //}
+    //}
 
     public bool TryLockPins()
     {
@@ -91,12 +99,17 @@ public class PinLockLine : MonoBehaviour
         return numLocked > 0;
     }
 
-    public void UnlockAll()
+    public void UnlockAll(bool byResetHead)
     {
         foreach (var p in _lockedPins)
             p.GetPin().TryUnlock();
 
         _lockedPins.Clear();
+
+        if(byResetHead)
+            GameManager.Instance.Shake.Play(Vector3.up);
+        else
+            GameManager.Instance.Shake.Play(Vector3.right);
 
         OnCheckLockablePins();
     }

@@ -13,7 +13,7 @@ public class ReleasePinsOnTrigger : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         GameManager.Instance.PlaySound(_hitSfx);
-        GameManager.Instance.PinLockLine.UnlockAll();
+        GameManager.Instance.PinLockLine.UnlockAll(true);
 
         _hitParticles.Play();
     }

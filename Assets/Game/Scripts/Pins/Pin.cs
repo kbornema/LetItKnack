@@ -139,15 +139,21 @@ public class Pin : MonoBehaviour
         {
             _lockedParticles.Play();
 
-            Vector2 offset = transform.position - _slotPos.position;
+            _rigidbody.gravityScale = 0.0f;
+            _rigidbody.velocity = Vector2.zero;
 
-            _rigidbody.position = new Vector2(_rigidbody.position.x, line.transform.position.y + offset.y);
+            Vector2 offset = transform.position - _slotPos.position;
+            Vector2 curPos = transform.position;
+
+            curPos.y = line.transform.position.y + offset.y;
+
+            transform.localPosition = curPos;
+
+            _rigidbody.position = transform.position; // new Vector2(_rigidbody.position.x, line.transform.position.y + localOffset.y);
 
             _lockedTime = Time.time;
             _springJoint.enabled = false;
-            //_rigidbody.simulated = false;
-            _rigidbody.gravityScale = 0.0f;
-            _rigidbody.velocity = Vector2.zero;
+
             _state = State.Locked;
             PinStateChangedEvent.Invoke(new Args(this));
             return true;

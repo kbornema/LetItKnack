@@ -27,7 +27,7 @@ public class PinSlot : MonoBehaviour
 
         else
         {
-            line.UnlockAll();
+            line.UnlockAll(true);
             return true;
         }
     }

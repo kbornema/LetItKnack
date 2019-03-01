@@ -67,6 +67,10 @@ public class GameManager : MonoBehaviour
     private Animator _lockAnimator = default;
     [SerializeField]
     private float _lockAnimationTime = 1.0f;
+
+    public CamShake Shake = default;
+
+    public Sfx CustomResetSfx = default;
     
 
     private void Awake()
@@ -190,7 +194,9 @@ public class GameManager : MonoBehaviour
 
     public void TryLockPins()
     {
-        if(!_pinLine.TryLockPins())
+        Shake.Play(Vector3.right * 0.25f);
+
+        if (!_pinLine.TryLockPins())
         {
             int numPins = 0;
             foreach(var pin in _allPins)
@@ -216,8 +222,9 @@ public class GameManager : MonoBehaviour
 
     public void UnlockAllPins()
     {
+        PlaySound(CustomResetSfx);
         GameIsOver = false;
-        _pinLine.UnlockAll();
+        _pinLine.UnlockAll(false);
     }
 
     public void PlaySound(Sfx sfx, float pitchScale = 1.0f)
