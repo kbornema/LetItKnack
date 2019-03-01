@@ -72,7 +72,10 @@ public class GameManager : MonoBehaviour
     public CamShake Shake = default;
 
     public Sfx CustomResetSfx = default;
-    
+
+    public Sfx _emptyClickSfx = default;
+
+
 
     private void Awake()
     {
@@ -225,8 +228,11 @@ public class GameManager : MonoBehaviour
                 }
             }
 
-            if(numPins > 0)
+            if (numPins > 0)
                 PlaySound(_wrongClickSfx);
+
+            else
+                PlaySound(_emptyClickSfx);
         }
 
         else
