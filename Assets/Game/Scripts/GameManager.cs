@@ -71,6 +71,9 @@ public class GameManager : MonoBehaviour
 
     public CamShake Shake = default;
 
+    [SerializeField]
+    private float _intendedUnlockCd = 0.75f;
+
     public Sfx CustomResetSfx = default;
 
     public Sfx _emptyClickSfx = default;
@@ -78,6 +81,8 @@ public class GameManager : MonoBehaviour
     public Sfx MoveOutSfx = default;
 
     public Sfx MoveInSfx = default;
+
+    private float _lastIntendedUnlock;
 
 
     private void Awake()
@@ -220,6 +225,11 @@ public class GameManager : MonoBehaviour
 
     public void TryLockPins()
     {
+        if(Time.time - _lastIntendedUnlock < _intendedUnlockCd)
+        {
+            return;
+        }
+
         Shake.Play(Vector3.right * 0.25f);
 
         if (!_pinLine.TryLockPins())
@@ -249,8 +259,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void UnlockAllPins()
+    public void UnlockAllPinsIntended()
     {
+        _lastIntendedUnlock = Time.time;
+
         PlaySound(CustomResetSfx);
         GameIsOver = false;
         _pinLine.UnlockAll(false);

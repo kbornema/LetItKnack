@@ -1,3 +1,6 @@
+Note:
+
+Linux and Mac versions are not tested!
 _____________________________________________
 
 Description:

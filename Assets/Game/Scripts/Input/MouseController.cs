@@ -43,7 +43,7 @@ public class MouseController : MonoBehaviour
                     gameManager.TryLockPins();
 
                 else if (Input.GetMouseButtonDown(1))
-                    gameManager.UnlockAllPins();
+                    gameManager.UnlockAllPinsIntended();
             }
         }
     }

@@ -7036,7 +7036,7 @@ MonoBehaviour:
   - {fileID: 527674544}
   - {fileID: 878691280}
   _lockParticles: {fileID: 422849993}
-  _wrongClickPenality: 0.02
+  _wrongClickPenality: 0.03
   _wrongClickSfx:
     _clip: {fileID: 8300000, guid: ec2e47b5da2b0b14e897a9bb6e47c874, type: 3}
     _volumeMin: 0.5
@@ -7052,6 +7052,7 @@ MonoBehaviour:
   _lockAnimator: {fileID: 1787359556}
   _lockAnimationTime: 1
   Shake: {fileID: 1787359558}
+  _intendedUnlockCd: 0.5
   CustomResetSfx:
     _clip: {fileID: 8300000, guid: 57470ed9d8a87aa46a77177d78a5b8bc, type: 3}
     _volumeMin: 0.5
