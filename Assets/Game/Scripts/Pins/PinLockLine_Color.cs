@@ -9,6 +9,8 @@ public class PinLockLine_Color : MonoBehaviour
     private PinLockLine _lockLine = default;
     [SerializeField]
     private SpriteRenderer _spriteRenderer = default;
+    [SerializeField]
+    private float _alpha = 1.0f;
 
     private void Start()
     {
@@ -24,15 +26,22 @@ public class PinLockLine_Color : MonoBehaviour
         if (_lockLine.HasLockablePins)
         {
             if(failSlot != null)
-                _spriteRenderer.color = Color.red;
+                SetColor(Color.red);
 
             else
-                _spriteRenderer.color = Color.green;
+                SetColor(Color.green);
         }
 
         else
         {
-            _spriteRenderer.color = Color.yellow;
+            SetColor(new Color(1.0f, 1.0f, 0.0f));
+            
         }
+    }
+
+    private void SetColor(Color c)
+    {
+        c.a = _alpha;
+        _spriteRenderer.color = c;
     }
 }

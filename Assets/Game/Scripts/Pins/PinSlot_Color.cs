@@ -52,7 +52,7 @@ public class PinSlot_Color : MonoBehaviour
     {
         if (arg0.GetMode() == PinSlot.Mode.Lock)
         {
-            SetColor(Color.yellow);
+            SetColor(new Color(1.0f, 1.0f, 0.0f));
         }
 
         else

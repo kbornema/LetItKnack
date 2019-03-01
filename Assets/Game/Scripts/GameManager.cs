@@ -12,11 +12,9 @@ public class GameManager : MonoBehaviour
 
     [SerializeField]
     private int _targetFps = 60;
-
     [SerializeField]
     private PinLockLine _pinLine = default;
     public PinLockLine PinLockLine => _pinLine;
-
     [SerializeField]
     private GameplaySettings _gameplaySettings = default;
     [SerializeField]
@@ -24,31 +22,26 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private AudioSource _audioPrefab = default;
     [SerializeField]
-    private List<Pin> _allPins = new List<Pin>();
-
-    private Queue<AudioSource> _unusedAudio = new Queue<AudioSource>();
-
-    [SerializeField]
     private float _winDelay = 0.5f;
     [SerializeField]
     private float _feedbackWinDelay = 0.25f;
     [SerializeField]
     private Sfx _wonSfx = default;
 
-    [HideInInspector]
-    public bool IsInWinRoutine;
-
-    private int _curLevel = 0;
-
-    public int CurrentLevel { get { return _curLevel; } }
-    public int MaxLevels { get { return _configuration.NumLevels; } }
-
-    public GenericEvent<GameManager> OnLevelCompletedEvent = new GenericEvent<GameManager>();
-    public GenericEvent<GameManager> OnGameFinishedEvent = new GenericEvent<GameManager>();
-
     [SerializeField]
     private ParticleSystem _levelWonParticles = default;
+    [SerializeField]
+    private List<VisualSpring> _springs = default;
+    [SerializeField]
+    private ParticleSystem _lockParticles = default;
+    [SerializeField]
+    private float _wrongClickPenality = 0.25f;
+    [SerializeField]
+    private Sfx _wrongClickSfx = default;
 
+    [Header("Debug")]
+    [SerializeField]
+    private List<Pin> _allPins = new List<Pin>();
     public bool GameIsOver = false;
 
     public bool ShouldCountTime = true;
@@ -58,15 +51,17 @@ public class GameManager : MonoBehaviour
     public float TotalTimeNeeded { get { return _totalTimeNeeded; } }
 
     [SerializeField]
-    private List<VisualSpring> _springs = default;
-    [SerializeField]
-    private ParticleSystem _lockParticles = default;
+    private int _curLevel = 0;
 
-    [SerializeField]
-    private float _wrongClickPenality = 0.25f;
+    public int CurrentLevel { get { return _curLevel; } }
+    public int MaxLevels { get { return _configuration.NumLevels; } }
 
-    [SerializeField]
-    private Sfx _wrongClickSfx = default;
+    public GenericEvent<GameManager> OnLevelCompletedEvent = new GenericEvent<GameManager>();
+    public GenericEvent<GameManager> OnGameFinishedEvent = new GenericEvent<GameManager>();
+
+    [HideInInspector]
+    public bool IsInWinRoutine;
+    private Queue<AudioSource> _unusedAudio = new Queue<AudioSource>();
 
     private void Awake()
     {

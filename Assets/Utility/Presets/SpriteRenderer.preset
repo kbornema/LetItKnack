@@ -55,7 +55,7 @@ Preset:
   - target: {fileID: 0}
     propertyPath: m_Materials.Array.data[0]
     value: 
-    objectReference: {fileID: 2100000, guid: a8dbcf0f454d818458fffd47c48b7cb6, type: 2}
+    objectReference: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   - target: {fileID: 0}
     propertyPath: m_StaticBatchInfo.firstSubMesh
     value: 0

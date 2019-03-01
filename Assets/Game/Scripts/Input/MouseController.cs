@@ -31,12 +31,12 @@ public class MouseController : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
             gameManager.TryLockPins();
 
+        else if (Input.GetMouseButtonDown(1))
+            gameManager.UnlockAllPins();
+
         if (GameManager.InDebugMode)
         {
-            if (Input.GetMouseButtonDown(1))
-                gameManager.UnlockAllPins();
-
-            else if (Input.GetKeyDown(KeyCode.LeftArrow))
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
                 gameManager.StepLevel(-1);
 
             else if (Input.GetKeyDown(KeyCode.RightArrow))
