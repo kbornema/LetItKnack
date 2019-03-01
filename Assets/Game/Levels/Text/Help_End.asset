@@ -12,6 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a4adc7b2c180bf48bc2306134f3e519, type: 3}
   m_Name: Help_End
   m_EditorClassIdentifier: 
-  text: 'Good job! You beat the game. But can you do faster?
-
-    Challenge your friends for a speedrun!'
+  text: "Good job! \nYou beat the game in {0}\n\nBut can you do faster?\nChallenge
+    your friends with a speedrun!"

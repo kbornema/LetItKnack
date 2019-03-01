@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9197a126e8d0973489fd2d95f7e89c2e, type: 3}
   m_Name: Level_03_c
   m_EditorClassIdentifier: 
-  TextToDisplay: {fileID: 0}
+  TextToDisplay: {fileID: 11400000, guid: 9cf7f056168fb4c45a740bda12eccb53, type: 2}
   Pins:
   - {fileID: 11400000, guid: 3e6779d88a795784db3fc577c4d84612, type: 2}
   - {fileID: 11400000, guid: c2ab6c8a5a9610245a8391b61072b361, type: 2}

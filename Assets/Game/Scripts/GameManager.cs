@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -54,7 +55,7 @@ public class GameManager : MonoBehaviour
     private int _curLevel = 0;
 
     public int CurrentLevel { get { return _curLevel; } }
-    public int MaxLevels { get { return _configuration.NumLevels; } }
+    public int NumLevels { get { return _configuration.NumLevels; } }
 
     public GenericEvent<GameManager> OnLevelCompletedEvent = new GenericEvent<GameManager>();
     public GenericEvent<GameManager> OnGameFinishedEvent = new GenericEvent<GameManager>();
@@ -98,13 +99,18 @@ public class GameManager : MonoBehaviour
         {
             if (!_configuration.HasLevel(_curLevel + 1))
             {
-                GameIsOver = true;
-                StartCoroutine(WonRoutine(false));
+                FinishGame();
             }
 
             else
                 StartCoroutine(WonRoutine(true));
         }
+    }
+
+    private void FinishGame()
+    {
+        GameIsOver = true;
+        StartCoroutine(WonRoutine(false));
     }
 
     private IEnumerator WonRoutine(bool nextLevel)
@@ -125,13 +131,13 @@ public class GameManager : MonoBehaviour
 
             yield return new WaitForSeconds(_lockAnimationTime * 0.5f);
             StepLevel(1);
-        }
 
-        if (nextLevel)
             IsInWinRoutine = false;
+        }
 
         else
         {
+            IsInWinRoutine = false;
             OnGameFinishedEvent.Invoke(this);
         }
     }
@@ -139,8 +145,17 @@ public class GameManager : MonoBehaviour
     public void StepLevel(int delta)
     {
         GameIsOver = false;
-        _curLevel = Mathf.Clamp(_curLevel + delta, 0, MaxLevels - 1);
-        PrepareLevel();
+
+        if (_curLevel + delta == NumLevels)
+        {
+            _curLevel = NumLevels - 1;
+            FinishGame();
+        }
+        else
+        {
+            _curLevel = Mathf.Clamp(_curLevel + delta, 0, NumLevels - 1);
+            PrepareLevel();
+        }
     }
 
     private void PrepareLevel()
@@ -280,5 +295,10 @@ public class GameManager : MonoBehaviour
     public void Quit()
     {
         StaticQuit();
+    }
+
+    public void Reload()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

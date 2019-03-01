@@ -22,11 +22,34 @@ public class UI_Root : MonoBehaviour
     private int _currentSeconds = 0;
     private int _currentMinutes = 0;
 
+    [SerializeField]
+    private CanvasGroup _endScreenGroup = default;
+    [SerializeField]
+    private TMPro.TextMeshProUGUI _endText = default;
+
+    [SerializeField]
+    private float _endFadeInTime = 1.0f;
+    [SerializeField]
+    private AnimationCurve _fadeInCurve = default;
+
+    [SerializeField]
+    private float _fadeDelay = 0.5f;
+
+    [SerializeField]
+    private Sfx _victorySfx = default;
+
+    [SerializeField]
+    private List<GameObject> _hudObjects = default;
+    private bool _hudVisible = true;
+
     private void Awake()
     {
         _tutorialToggle.onValueChanged.AddListener(OnTutorialToggleValueChanged);
         GameManager.Instance.OnLevelCompletedEvent.AddListener(OnLevelCompleted);
         GameManager.Instance.OnGameFinishedEvent.AddListener(OnGameFinished);
+
+        _endScreenGroup.alpha = 0.0f;
+        _endScreenGroup.gameObject.SetActive(false);
     }
 
     private void Start()
@@ -36,6 +59,9 @@ public class UI_Root : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Space))
+            ShowHud(!_hudVisible);
+
         if (GameManager.Instance.GameIsOver)
             return;
 
@@ -49,8 +75,13 @@ public class UI_Root : MonoBehaviour
             _currentSeconds = seconds;
             _currentMinutes = minutes;
 
-            _timerText.text = "Time: " + _currentMinutes.ToString("00") + ":" + _currentSeconds.ToString("00");
+            _timerText.text = "Time: " + GetTimeText();
         }
+    }
+
+    private string GetTimeText()
+    {
+        return _currentMinutes.ToString("00") + ":" + _currentSeconds.ToString("00");
     }
 
     private void OnTutorialToggleValueChanged(bool newVal)
@@ -60,6 +91,12 @@ public class UI_Root : MonoBehaviour
 
     private void OnLevelCompleted(GameManager arg0)
     {
+        if(_endScreenGroup.gameObject.activeSelf)
+        {
+            _endScreenGroup.alpha = 0.0f;
+            _endScreenGroup.gameObject.SetActive(false);
+        }
+
         if (_timerStartText && arg0.CurrentLevel > 0)
         {
             _timerStartText.SetActive(false);
@@ -70,7 +107,43 @@ public class UI_Root : MonoBehaviour
     }   
 
     private void OnGameFinished(GameManager arg0)
+    {   
+        StartCoroutine(EndRoutine());
+    }
+
+    public void ShowHud(bool val)
     {
-        _text.text = _finalText.text;
+        _hudVisible = val;
+
+        foreach (var v in _hudObjects)
+        {
+            v.SetActive(val);
+        }
+    }
+
+    private IEnumerator EndRoutine()
+    {
+        _endScreenGroup.alpha = 0.0f;
+        _endScreenGroup.gameObject.SetActive(true);
+
+        string finalText = string.Format(_finalText.text, GetTimeText());
+        _endText.text = finalText;
+
+        GameManager.Instance.PlaySound(_victorySfx);
+
+        yield return new WaitForSeconds(_fadeDelay);
+
+        float curTime = 0.0f;
+
+        while(curTime < _endFadeInTime)
+        {
+            float t = Mathf.Clamp01(curTime / _endFadeInTime);
+
+            _endScreenGroup.alpha = _fadeInCurve.Evaluate(t);
+
+            curTime += Time.deltaTime;
+
+            yield return new WaitForEndOfFrame();
+        }
     }
 }

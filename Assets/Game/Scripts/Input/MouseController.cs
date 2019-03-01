@@ -23,26 +23,29 @@ public class MouseController : MonoBehaviour
     {
         var gameManager = GameManager.Instance;
 
-        _mousePos = _cam.ScreenToWorldPoint(Input.mousePosition);
+        if (!gameManager.GameIsOver)
+            _mousePos = _cam.ScreenToWorldPoint(Input.mousePosition);
 
-        if (gameManager.IsInWinRoutine)
-            return;
-        
-        if (Input.GetMouseButtonDown(0))
-            gameManager.TryLockPins();
-
-        else if (Input.GetMouseButtonDown(1))
-            gameManager.UnlockAllPins();
-
-        if (GameManager.InDebugMode)
+        if (!gameManager.IsInWinRoutine)
         {
-            if (Input.GetKeyDown(KeyCode.LeftArrow))
-                gameManager.StepLevel(-1);
+            if (GameManager.InDebugMode)
+            {
+                if (Input.GetKeyDown(KeyCode.LeftArrow))
+                    gameManager.StepLevel(-1);
 
-            else if (Input.GetKeyDown(KeyCode.RightArrow))
-                gameManager.StepLevel(1);
+                else if (Input.GetKeyDown(KeyCode.RightArrow))
+                    gameManager.StepLevel(1);
+            }
+
+            if (!gameManager.GameIsOver)
+            {
+                if (Input.GetMouseButtonDown(0))
+                    gameManager.TryLockPins();
+
+                else if (Input.GetMouseButtonDown(1))
+                    gameManager.UnlockAllPins();
+            }
         }
-
     }
 
     private void FixedUpdate()

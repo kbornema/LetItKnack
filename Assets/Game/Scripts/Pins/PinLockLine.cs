@@ -39,7 +39,6 @@ public class PinLockLine : MonoBehaviour
         }
     }
 
-    //TODO: bug: sometimes when exiting at the same frame the lock has been locked, it will unlock automatically
     private void OnTriggerExit2D(Collider2D collision)
     {
         var pinSlot = collision.GetComponent<PinSlot>();
@@ -67,14 +66,6 @@ public class PinLockLine : MonoBehaviour
             }
         }
     }
-
-    //private void LateUpdate()
-    //{
-    //    //for (int i = _lockablePins.Count - 1; i >= 0; i--)
-    //    //{
-            
-    //    //}
-    //}
 
     public bool TryLockPins()
     {

@@ -144,12 +144,9 @@ public class Pin : MonoBehaviour
 
             Vector2 offset = transform.position - _slotPos.position;
             Vector2 curPos = transform.position;
-
             curPos.y = line.transform.position.y + offset.y;
-
             transform.localPosition = curPos;
-
-            _rigidbody.position = transform.position; // new Vector2(_rigidbody.position.x, line.transform.position.y + localOffset.y);
+            _rigidbody.position = transform.position;
 
             _lockedTime = Time.time;
             _springJoint.enabled = false;
@@ -193,7 +190,10 @@ public class Pin : MonoBehaviour
 
     public void Move(Vector2 dir)
     {
-        _rigidbody.position += dir;
+        Vector2 pos = (Vector2)transform.localPosition + dir;
+
+        transform.localPosition = pos;
+        _rigidbody.position = transform.position;
     }
 
     public void ResetPosition()

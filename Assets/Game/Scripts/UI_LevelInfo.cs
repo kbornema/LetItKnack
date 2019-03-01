@@ -16,6 +16,6 @@ public class UI_LevelInfo : MonoBehaviour
 
     private void OnLevelCompleted(GameManager arg0)
     {
-        _text.text = "Level " + (arg0.CurrentLevel + 1) + "/" + arg0.MaxLevels;
+        _text.text = "Level " + (arg0.CurrentLevel + 1) + "/" + arg0.NumLevels;
     }
 }
