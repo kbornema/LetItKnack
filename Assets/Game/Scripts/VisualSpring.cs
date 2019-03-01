@@ -23,6 +23,8 @@ public class VisualSpring : MonoBehaviour
     [SerializeField]
     private float _innerPartScaleFactor = 0.5f;
 
+    public Rigidbody2D PhysicsAnchor = default;
+
     private List<GameObject> _partInstances;
 
     public Transform ObjToWatch = default;

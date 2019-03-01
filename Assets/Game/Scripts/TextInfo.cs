@@ -5,6 +5,6 @@ using UnityEngine;
 [CreateAssetMenu]
 public class TextInfo : ScriptableObject
 {   
-    [TextArea()]
+    [TextArea(2, 25)]
     public string text = default;
 }

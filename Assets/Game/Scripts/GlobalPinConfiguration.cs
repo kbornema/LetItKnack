@@ -48,14 +48,16 @@ public class GlobalPinConfiguration : MonoBehaviour
             if(pinDesc[i])
             {
                 var instance = Instantiate(_pinPrefab, _pinPositions[i].position, Quaternion.identity, _pinRoot);
-                instance.InitPin(i, pinDesc[i], _height);
+
+                var pos = _pinPositions[i].localPosition;
+                instance.InitPin(i, pinDesc[i], _height, pos);
                 numSpawned++;
             }
         }
 
         if(numSpawned == 0)
         {
-            Debug.LogError("Needs pins!");
+            Debug.LogError("Need pins!");
         }
     }
 

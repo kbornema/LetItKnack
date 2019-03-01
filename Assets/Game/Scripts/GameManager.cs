@@ -63,6 +63,12 @@ public class GameManager : MonoBehaviour
     public bool IsInWinRoutine;
     private Queue<AudioSource> _unusedAudio = new Queue<AudioSource>();
 
+    [SerializeField]
+    private Animator _lockAnimator = default;
+    [SerializeField]
+    private float _lockAnimationTime = 1.0f;
+    
+
     private void Awake()
     {
         Application.targetFrameRate = _targetFps;
@@ -81,11 +87,6 @@ public class GameManager : MonoBehaviour
         _pinLine.OnLockedPinEvent.AddListener(OnLockedPin);
         _configuration.Spawn(_curLevel);
     }
-    
-    public GameplaySettings GetSettings()
-    {
-        return _gameplaySettings;
-    }
 
     private void OnLockedPin(PinLockLine.Args arg0)
     {
@@ -94,15 +95,15 @@ public class GameManager : MonoBehaviour
             if (!_configuration.HasLevel(_curLevel + 1))
             {
                 GameIsOver = true;
-                OnGameFinishedEvent.Invoke(this);
+                StartCoroutine(WonRoutine(false));
             }
 
             else
-                StartCoroutine(WonRoutine());
+                StartCoroutine(WonRoutine(true));
         }
     }
 
-    private IEnumerator WonRoutine()
+    private IEnumerator WonRoutine(bool nextLevel)
     {
         IsInWinRoutine = true;  
 
@@ -113,11 +114,22 @@ public class GameManager : MonoBehaviour
 
         yield return new WaitForSeconds(_winDelay);
 
-        StepLevel(1);
+        if(nextLevel)
+        {
+            _lockAnimator.SetFloat("Speed", 1.0f / _lockAnimationTime);
+            _lockAnimator.SetBool("Move", true);
 
-        yield return null;
+            yield return new WaitForSeconds(_lockAnimationTime * 0.5f);
+            StepLevel(1);
+        }
 
-        IsInWinRoutine = false;
+        if (nextLevel)
+            IsInWinRoutine = false;
+
+        else
+        {
+            OnGameFinishedEvent.Invoke(this);
+        }
     }
 
     public void StepLevel(int delta)
@@ -150,6 +162,11 @@ public class GameManager : MonoBehaviour
     {
         if(ShouldCountTime)
             _totalTimeNeeded += Time.deltaTime;
+
+        if(Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.F1))
+        {
+            InDebugMode = !InDebugMode;
+        }
     }
 
     public void RegisterPin(Pin pin)
@@ -160,6 +177,12 @@ public class GameManager : MonoBehaviour
         var spring = _springs[pin.PinIndex];
         spring.gameObject.SetActive(true);
         spring.ObjToWatch = pinUp;
+
+        var springJoint = pin.GetSpringJoint();
+        springJoint.connectedBody = spring.PhysicsAnchor;
+        springJoint.connectedAnchor = Vector2.zero;
+
+        pin.ResetPosition();
 
         _allPins.Add(pin);
         pin.ApplySettings(_gameplaySettings);
@@ -235,5 +258,20 @@ public class GameManager : MonoBehaviour
     public string GetHelpText()
     {
         return _configuration.GetHelpText(_curLevel);
+    }
+
+    /// <summary> Quits the Application. Works both on editor and runtime. </summary>
+    public static void StaticQuit()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+         Application.Quit();
+#endif
+    }
+
+    public void Quit()
+    {
+        StaticQuit();
     }
 }

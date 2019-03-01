@@ -9,6 +9,7 @@ public class Pin : MonoBehaviour
 
     [SerializeField]
     private Rigidbody2D _rigidbody = default;
+    public Rigidbody2D GetPinBody() { return _rigidbody; }
     
     private State _state = State.Free;
     public State GetState() { return _state; }
@@ -25,6 +26,7 @@ public class Pin : MonoBehaviour
     private SpriteRenderer _spriteRenderer = default;
     [SerializeField]
     private SpringJoint2D _springJoint = default;
+    public SpringJoint2D GetSpringJoint() { return _springJoint; }
     [SerializeField]
     private List<Collider2D> _collider = default;
 
@@ -60,6 +62,8 @@ public class Pin : MonoBehaviour
 
     public int PinIndex = -1;
 
+    public Vector3 LocalDefaultPos;
+
     private void Reset()
     {
         if (!_rigidbody)
@@ -87,8 +91,12 @@ public class Pin : MonoBehaviour
         }
     }
 
-    public void InitPin(int pinIndex, PinConfig config, float height)
+    public void InitPin(int pinIndex, PinConfig config, float height, Vector3 localPos)
     {
+        LocalDefaultPos = localPos;
+        ResetPosition();
+        _xCoord = localPos.x;
+
         PinIndex = pinIndex;
         _moveDown.SetSpeed(config.SlipSpeed);
 
@@ -180,6 +188,12 @@ public class Pin : MonoBehaviour
     public void Move(Vector2 dir)
     {
         _rigidbody.position += dir;
+    }
+
+    public void ResetPosition()
+    {
+        transform.localPosition = LocalDefaultPos;
+        _rigidbody.position = transform.position;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
