@@ -17,17 +17,4 @@ Controls:
 - Press 'space' to toggle UI elements
 _____________________________________________
 
-Assets:
-
-Used font can be found here:
-https://www.dafont.com/font-comment.php?file=perfect_dos_vga_437
-
-All sounds are Creative Commons 0 and were taken from:
-https://freesound.org/
-and edited with Audacity.
-
-All sprites were self-created with Aseprite.
-
-_____________________________________________
-
 The end

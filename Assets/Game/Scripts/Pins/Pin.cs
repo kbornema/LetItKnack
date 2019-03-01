@@ -64,6 +64,8 @@ public class Pin : MonoBehaviour
 
     public Vector3 LocalDefaultPos;
 
+    private bool _firstHitSfx = true;
+
     private void Reset()
     {
         if (!_rigidbody)
@@ -204,6 +206,13 @@ public class Pin : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        //omit first sfx (mostly when spawning):
+        if(_firstHitSfx)
+        {
+            _firstHitSfx = false;
+            return;
+        }
+
         if(Time.time - _lastSfx >= _sfxCooldown)
         {
             GameManager.Instance.PlaySound(_sfx, _pitchScale);

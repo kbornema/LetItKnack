@@ -75,6 +75,9 @@ public class GameManager : MonoBehaviour
 
     public Sfx _emptyClickSfx = default;
 
+    public Sfx MoveOutSfx = default;
+
+    public Sfx MoveInSfx = default;
 
 
     private void Awake()
@@ -132,7 +135,12 @@ public class GameManager : MonoBehaviour
             _lockAnimator.SetFloat("Speed", 1.0f / _lockAnimationTime);
             _lockAnimator.SetBool("Move", true);
 
+            PlaySound(MoveOutSfx);
+
             yield return new WaitForSeconds(_lockAnimationTime * 0.5f);
+
+            PlaySound(MoveInSfx);
+
             StepLevel(1);
 
             IsInWinRoutine = false;

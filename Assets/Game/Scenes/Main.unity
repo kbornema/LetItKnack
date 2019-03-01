@@ -7064,6 +7064,18 @@ MonoBehaviour:
     _volumeMax: 0.5
     _pitchMin: 0.5
     _pitchMax: 0.75
+  MoveOutSfx:
+    _clip: {fileID: 8300000, guid: c8c8a7a777398a546a0dc9cdd2957b92, type: 3}
+    _volumeMin: 0.75
+    _volumeMax: 0.75
+    _pitchMin: 0.9
+    _pitchMax: 0.9
+  MoveInSfx:
+    _clip: {fileID: 8300000, guid: 2cd00726f4481c944b40b9ad013075da, type: 3}
+    _volumeMin: 0.75
+    _volumeMax: 0.75
+    _pitchMin: 0.9
+    _pitchMax: 0.9
 --- !u!4 &962694748
 Transform:
   m_ObjectHideFlags: 0
